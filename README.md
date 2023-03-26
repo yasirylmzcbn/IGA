@@ -13,7 +13,13 @@
 * Click on the IP address that pops up in the terminal to visit the the web page.
 
 ## To run the extension yourself:
-TODO
+
+* Go to the extension branch and download all files
+* On chrome go to chrome://extensions/
+* Turn on developer mode
+* Click load unpacked
+* Go to the downloaded folder and select
+* Find the extension in the top right and input your api key!
 
 ### Technologies Used:
 * Python
