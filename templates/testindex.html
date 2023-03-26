@@ -3,21 +3,28 @@
   
 <head>
     <title>BookFace</title>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
   
 <body>
     <center>
-        <h3>Harry Potter 1<h3/>
-            <div>Page: {{pageNumber}}</div>
-            <div> {{ pageText }}</div>
-            <img src="{{ dalleImage }}">
-            <a href="previous">
-                previous page
-            </a>
 
-            <a href="next">
-                next page
+        <div id="titleCard">
+            <h3 id="title">Harry Potter</h3>
+            <div id="pageNum">Page : {{pageNumber}}</div>
+        </div>
+
+        <div id="pageText"> {{ pageText }} </div>
+
+        <div id="imageDiv">
+            <a id="prevPage" href="previous">
+                Previous Page
             </a>
+            <img id="dalleImage" src="{{ dalleImage }}">
+            <a id="nextPage" href="next">
+                Next Page
+            </a>
+        </div>
 
     </center>
 </body>

@@ -1,0 +1,65 @@
+body {
+    margin: 0 auto;
+}
+
+#titleCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 40px;
+    height: 15vh;
+}
+
+#title {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+#pageNum {
+    font-weight: 700;
+    background-color: beige;
+    border-radius: 3px;
+    border: 1px solid black;
+    padding: 5px 5px;
+}
+
+#dalleImage {
+    width: 500px;
+    height: 300px;
+    border: 3px solid black;
+    border-radius: 5px;
+}
+
+
+#pageText {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 90vw;
+    margin-bottom: 20px;
+    background-color: beige;
+    border-radius: 5px;
+    border: 3px solid grey;
+}
+
+#imageDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#prevPage, #nextPage {
+    background-color: grey;
+    width: 60px;
+    height: 50px;
+    padding: 10px 30px;
+    text-decoration: none;
+    color: white;
+    border-radius: 3px;
+    border: 3px solid black;
+    font-size: 20px;
+    text-align: center;
+}
