@@ -1,6 +1,6 @@
 # IGA
 
-### IGABB, or Image Generating Apparatus, is a project that utilizes OpenAI's APIs for chatGPT-3.5 and DALL-E 2 to detect the important content in the page that they are reading and create an image using the key content on every page to aid the reader in visualizing what is going on in the book. We also created a chrome extension that allows users to input text that gets summarized and turned into a DALL-E 2 prompt, which is then turned into a picture.
+### IGA, or Image Generating Apparatus, is a project that utilizes OpenAI's APIs for chatGPT-3.5 and DALL-E 2 to detect the important content in the page that they are reading and create an image using the key content on every page to aid the reader in visualizing what is going on in the book. We also created a chrome extension that allows users to input text that gets summarized and turned into a DALL-E 2 prompt, which is then turned into a picture.
 
 ## To run the website yourself locally:
 
