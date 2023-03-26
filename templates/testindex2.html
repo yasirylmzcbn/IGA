@@ -23,10 +23,11 @@
                 Next Page
             </a>
         </div>
-        <div>
-            <form>
-                <input name="pageInput">
-                <input type="submit" href="submitPage">
+        <div style="margin-top:13px;">
+            <form method="POST" action="{{bookName}}/page">
+                <label for="pageInput">Page Number: </label>
+                <input name="pageInput" type="text" id="pageInput">
+                <input name="pageInputSubmit" id="pageInputSubmit" type="submit" href="submitPage">
             <form>
         </div>
 
