@@ -9,7 +9,7 @@
 <body>
     <center>
         <div id="titleCard">
-            <h3 id="title">Harry Potter</h3>
+            <h3 id="title">{{ bookName }}</h3>
             <div id="pageNum">Page : {{pageNumber}}</div>
         </div>
         <a href="generateImage" id="genImageLink" style="display:none;"></a>
@@ -24,7 +24,6 @@
                 Next Page
             </a>
         </div>
-
     </center>
     <script>
         window.onload = function() {

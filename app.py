@@ -2,22 +2,24 @@ from flask import Flask, render_template, request
 import openai
 from PyPDF2 import PdfReader
  
-
-def read(bookName, pages):
-    reader = PdfReader("books\\" + bookName + ".pdf")
+pages = []
+def read(bookName):
+    global pages
+    pages = []
+    reader = PdfReader("books/" + bookName + ".pdf")
     for i in range(len(reader.pages)):
         pages.append(reader.pages[i].extract_text())
 
 
     
-
-openai.api_key = "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"
+openai.api_key = "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"
 # "He pocketed it to use on Fluf fy — he didn’ t feel much like singing. He ran back down to the common room. “We’d better put the cloak on here, and make sure it covers all three of us –         if Filch spots one of our feet wandering along on its own —” What are you doing?” said a voice from the corner of the room. Neville appeared from behind an armchair , clutching T revor the toad, who looked as though he’d been making another bid for freedom.         “Nothing, Neville, nothing,” said Harry , hurriedly putting the cloak behind         his back.         Neville stared at their guilty faces.         “You’re going out again,” he said.         “No, no, no,” said Hermione. “No, we’re not. Why don’ t you go to bed, Neville?” Harry looked at the grandfather clock by the door . They couldn’ t afford to         waste any more time, Snape might even now be playing Fluf fy to sleep. “You can’ t go out,” said Neville, “you’ll be caught again. Gryf findor will be in even more trouble.” “You don’ t understand,” said Harry , “this is important.”         But Neville was clearly steeling himself to do something desperate.         I won’ t let you do it,” he said, hurrying to stand in front of the portrait hole. “I’ll — I’ll fight you!” “Neville, “Ron exploded, “get away from that hole and don’ t be an idiot— "
 
 app = Flask(__name__)
 pageNumber = 0
 
-def generateImage(pages, pageNumber):
+@app.route('/generateImage')
+def generateImage():
     gptPrompt = pages[pageNumber]
     # prompt generation
     response = openai.ChatCompletion.create(
@@ -36,8 +38,8 @@ def generateImage(pages, pageNumber):
     size="1024x1024"
     )
     image_url = response['data'][0]['url']
-    print(image_url)
-    return image_url
+    print("image url:",image_url)
+    return render_template("testindex2.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=image_url)
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -48,34 +50,44 @@ def next():
     global pageNumber
     if pageNumber != len(pages):
         pageNumber += 1
-    imgUrl = generateImage(pages, pageNumber)
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
 
 @app.route("/previous")
 def previous():
     global pageNumber
     if pageNumber != 0:
         pageNumber -= 1
-    imgUrl = generateImage(pages, pageNumber)
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
+
+# @app.route("/HP")
+# def HP():
+#     global pageNumber, pages
+#     pageNumber = 0
+#     read('HP')
+#     print("length = ",len(pages))
+#     return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
+
+@app.route("/<string:name>")
+def chooseBook(name):
+    global pageNumber, pages
+    pageNumber = 0
+    read(name)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=name, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
+
+# @app.route("/submitPage")
+# def my_form_post():
+#     text = request.form['pageInput']
+#     processed_text = text.upper()
+#     print('-'*100)
+#     print(processed_text)
+#     print('-'*100)
+#     return processed_text
 
 
-@app.route("/<string:name>/<int:pageNum>")
-def bookPage(name, pageNum):
-    pages = []
-    reader = PdfReader("books\\" + str(name) + ".pdf")
-    read(name, pages)
-    imgUrl = generateImage(pages, pageNumber)
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
-
-
-# def contact():
-#     if request.method == 'POST':
-#         if request.form['submit_button'] == 'Do Something':
-#             pass # do something
-#         elif request.form['submit_button'] == 'Do Something Else':
-#             pass # do something else
-#         else:
-#             pass # unknown
-#     elif request.method == 'GET':
-#         return render_template('contact.html', form=form)
+# @app.route("/<string:name>/<int:pageNum>")
+# def bookPage(name, pageNum):
+#     global pages
+#     pageNumber = pageNum
+#     reader = PdfReader("books/" + str(name) + ".pdf")
+#     read(name)
+#     return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")

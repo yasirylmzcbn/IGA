@@ -9,7 +9,7 @@
 <body>
     <center>
         <div id="titleCard">
-            <h3 id="title">Harry Potter</h3>
+            <h3 id="title">{{ bookName}}</h3>
             <div id="pageNum">Page : {{pageNumber}}</div>
         </div>
         <div id="pageText"> {{ pageText }} </div>
@@ -22,6 +22,12 @@
             <a id="nextPage" href="next">
                 Next Page
             </a>
+        </div>
+        <div>
+            <form>
+                <input name="pageInput">
+                <input type="submit" href="submitPage">
+            <form>
         </div>
 
     </center>
