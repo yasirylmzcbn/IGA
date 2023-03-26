@@ -1,24 +1,35 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import openai
 from PyPDF2 import PdfReader
- 
+import os
+
+books_name = ""
 pages = []
+pageNumber = 0
 def read(bookName):
-    global pages
+    global pages, pageNumber
+    pageNumber = 0
     pages = []
     reader = PdfReader("books/" + bookName + ".pdf")
     for i in range(len(reader.pages)):
         pages.append(reader.pages[i].extract_text())
 
 
-    
-openai.api_key = "YOUR-API-TOKEN-HERE"
+openai.api_key = "YOUR_API_TOKEN_HERE"
 
 app = Flask(__name__)
 pageNumber = 0
 
+
+@app.route("/<string:bookName>/generateImage")
+def genBookImage(bookName):
+    print("in function")
+    return redirect(url_for('generateImage'))
+
 @app.route('/generateImage')
 def generateImage():
+    print("generating")
+    global pageNumber
     gptPrompt = pages[pageNumber]
     # prompt generation
     response = openai.ChatCompletion.create(
@@ -38,7 +49,8 @@ def generateImage():
     )
     image_url = response['data'][0]['url']
     print("image url:",image_url)
-    return render_template("testindex2.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=image_url)
+    
+    return render_template("testindex2.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=books_name, dalleImage=image_url)
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -49,14 +61,33 @@ def next():
     global pageNumber
     if pageNumber != len(pages):
         pageNumber += 1
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
+    print(len(pages))
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=books_name, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
 
 @app.route("/previous")
 def previous():
-    global pageNumber
+    global pageNumber, books_name
     if pageNumber != 0:
         pageNumber -= 1
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
+
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=books_name, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
+
+
+@app.route("/<string:bookName>/page", methods=['POST'])
+def page(bookName):
+    global pageNumber, books_name
+    print("old pagenum", pageNumber)
+    print(request.form.get("pageInput"))
+    
+    pageNumber = int(request.form['pageInput'])
+    if(pageNumber > len(pages)):
+        pageNumber = len(pages)
+    print("new pagenum", pageNumber)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=bookName, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
+
+# @app.route('/favicon.ico')
+# def favicon():
+#     return '', 204
 
 # @app.route("/HP")
 # def HP():
@@ -68,19 +99,11 @@ def previous():
 
 @app.route("/<string:name>")
 def chooseBook(name):
-    global pageNumber, pages
+    global pageNumber, pages, books_name
     pageNumber = 0
+    books_name = name
     read(name)
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=name, dalleImage="https://github.com/yasirylmzcbn/IGA/blob/chromeExtension/loading.gif")
-
-# @app.route("/submitPage")
-# def my_form_post():
-#     text = request.form['pageInput']
-#     processed_text = text.upper()
-#     print('-'*100)
-#     print(processed_text)
-#     print('-'*100)
-#     return processed_text
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, bookName=name, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
 
 
 # @app.route("/<string:name>/<int:pageNum>")
