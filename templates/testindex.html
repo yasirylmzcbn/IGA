@@ -2,16 +2,19 @@
 <html>
   
 <head>
-    <title>PDF in HTML</title>
+    <title>BookFace</title>
 </head>
   
 <body>
     <center>
         <h3>Harry Potter 1<h3/>
+            <div>Page: {{pageNumber}}</div>
             <div> {{ pageText }}</div>
+            <img src="{{ dalleImage }}">
             <a href="previous">
                 previous page
             </a>
+
             <a href="next">
                 next page
             </a>
