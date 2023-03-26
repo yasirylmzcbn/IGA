@@ -7,7 +7,7 @@
 * Go to https://platform.openai.com/account/api-keys
 * Create a new API key for yourself and copy it
 * Download the repository
-* Open app.py and paste your API key where it says `openai.api_key  =  "YOUR-API-TOKEN-HERE"`
+* Open app.py and paste your API key where it says `openai.api_key  =  "YOUR_API_TOKEN_HERE"`
 * Open a terminal in the directory of the repository
 * Run the command `flask run` (you will have to pip install flask, openai, and PyPDF2 if you don't have them already)
 * Click on the IP address that pops up in the terminal to visit the the web page.
