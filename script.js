@@ -1,5 +1,3 @@
-var apiKey =  "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"
-
 const req = new XMLHttpRequest();
 var reply1;
 var reply2;
@@ -11,7 +9,7 @@ function update(){
 
   req.open('POST', 'https://api.openai.com/v1/chat/completions');
   req.setRequestHeader('Content-Type', 'application/json');
-  req.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+  req.setRequestHeader('Authorization', 'Bearer ' + document.getElementById("apikey").value);
   req.send(JSON.stringify({
     'model': 'gpt-3.5-turbo',
     'messages': [
@@ -32,7 +30,7 @@ function next(){
 
   req.open('POST', 'https://api.openai.com/v1/images/generations');
   req.setRequestHeader('Content-Type', 'application/json');
-  req.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+  req.setRequestHeader('Authorization', 'Bearer ' + document.getElementById("apikey").value);
   req.send(JSON.stringify({
     "prompt": reply,
     "n":1,
