@@ -1,49 +1,29 @@
 from flask import Flask, render_template, request
-from threading import Timer
-import concurrent.futures
 import openai
 from PyPDF2 import PdfReader
  
-# creating a pdf reader object
-reader = PdfReader('1984.pdf')
-pages = [] 
 
-def get_paragraphs(page_text):
-    paragraphs = []
-    for line in page_text.split("\n"):
-        if line.endswith((".", "?", "!")) and len(line) > 2 and len(line) < 70:
-            current_paragraph += line.strip() + "\n"
-            paragraphs.append(current_paragraph)
-            current_paragraph = ""
-        else:
-            current_paragraph += line.strip() + " "
-        if line.isupper():
-            current_paragraph += '\n\n'
-        
-    # Add the last paragraph to the list
-    if current_paragraph:
-        paragraphs.append(current_paragraph)
-    return paragraphs
+def read(bookName, pages):
+    reader = PdfReader("books\\" + bookName + ".pdf")
+    for i in range(len(reader.pages)):
+        pages.append(reader.pages[i].extract_text())
 
-for i in range(len(reader.pages)):
-    pages.append(reader.pages[i].extract_text())
+
     
 
-openai.api_key = "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"
+openai.api_key = "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"
 # "He pocketed it to use on Fluf fy — he didn’ t feel much like singing. He ran back down to the common room. “We’d better put the cloak on here, and make sure it covers all three of us –         if Filch spots one of our feet wandering along on its own —” What are you doing?” said a voice from the corner of the room. Neville appeared from behind an armchair , clutching T revor the toad, who looked as though he’d been making another bid for freedom.         “Nothing, Neville, nothing,” said Harry , hurriedly putting the cloak behind         his back.         Neville stared at their guilty faces.         “You’re going out again,” he said.         “No, no, no,” said Hermione. “No, we’re not. Why don’ t you go to bed, Neville?” Harry looked at the grandfather clock by the door . They couldn’ t afford to         waste any more time, Snape might even now be playing Fluf fy to sleep. “You can’ t go out,” said Neville, “you’ll be caught again. Gryf findor will be in even more trouble.” “You don’ t understand,” said Harry , “this is important.”         But Neville was clearly steeling himself to do something desperate.         I won’ t let you do it,” he said, hurrying to stand in front of the portrait hole. “I’ll — I’ll fight you!” “Neville, “Ron exploded, “get away from that hole and don’ t be an idiot— "
 
 app = Flask(__name__)
 pageNumber = 0
 
-@app.route('/generateImage', methods=['GET'])
-def generateImage():
-    global resultURL, pages, pageNumber
+def generateImage(pages, pageNumber):
     gptPrompt = pages[pageNumber]
     # prompt generation
     response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": "You are a helpful assistant that finds a few keywords from a page from a book that is inputted to be used as a prompt for DALL-E to generate images to aid the user in visualizing what's going on in the text. You create a prompt from the keywords in a way that would help the DALL-E AI generate a picture that is like a scene from a movie. Keep the prompt to about a sentence and only include the most important idea from the input. If any keywords are offensive/not allowed by the open ai safety system, don't include them in the prompt."},
+        {"role": "system", "content": "You are a helpful assistant that finds a few keywords from a page from a book that is inputted to be used as a prompt for DALL-E to generate images to aid the user in visualizing what's going on in the text. You create a prompt from the keywords in a way that would help the DALL-E AI generate a picture that is like a scene from a movie. Keep the prompt to about a sentence and only include the most important idea from the input."},
         {"role": "user", "content": gptPrompt}]) 
 
     reply = response['choices'][0]['message']['content']
@@ -51,39 +31,43 @@ def generateImage():
 
     # image generation
     response = openai.Image.create(
-    prompt= reply + ", movie scene",
+    prompt= reply + "",
     n=1,
     size="1024x1024"
     )
-    resultURL = response['data'][0]['url']
-    print("result url is", resultURL)
-    return render_template("testindex2.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=resultURL)
-    # return resultURL
+    image_url = response['data'][0]['url']
+    print(image_url)
+    return image_url
 
-# def checkThread(th):
-#     global resultURL
-#     if th.is_alive():
-#         return "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-#     else:
-#         return resultURL
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    global pageNumber
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
+    return render_template("landing.html")
 
 @app.route("/next")
 def next():
     global pageNumber
     if pageNumber != len(pages):
         pageNumber += 1
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
+    imgUrl = generateImage(pages, pageNumber)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
 
 @app.route("/previous")
 def previous():
     global pageNumber
     if pageNumber != 0:
         pageNumber -= 1
-    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage="https://raw.githubusercontent.com/yasirylmzcbn/IGA/chromeExtension/loading.gif")
+    imgUrl = generateImage(pages, pageNumber)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
+
+
+@app.route("/<string:name>/<int:pageNum>")
+def bookPage(name, pageNum):
+    pages = []
+    reader = PdfReader("books\\" + str(name) + ".pdf")
+    read(name, pages)
+    imgUrl = generateImage(pages, pageNumber)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
+
 
 # def contact():
 #     if request.method == 'POST':

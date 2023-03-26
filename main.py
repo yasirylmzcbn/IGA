@@ -2,29 +2,13 @@ from flask import Flask, render_template, request
 import openai
 from PyPDF2 import PdfReader
  
-# creating a pdf reader object
-reader = PdfReader('HP1.pdf')
-pages = [] 
 
-def get_paragraphs(page_text):
-    paragraphs = []
-    for line in page_text.split("\n"):
-        if line.endswith((".", "?", "!")) and len(line) > 2 and len(line) < 70:
-            current_paragraph += line.strip() + "\n"
-            paragraphs.append(current_paragraph)
-            current_paragraph = ""
-        else:
-            current_paragraph += line.strip() + " "
-        if line.isupper():
-            current_paragraph += '\n\n'
-        
-    # Add the last paragraph to the list
-    if current_paragraph:
-        paragraphs.append(current_paragraph)
-    return paragraphs
+def read(bookName, pages):
+    reader = PdfReader(bookName + ".pdf")
+    for i in range(len(reader.pages)):
+        pages.append(reader.pages[i].extract_text())
 
-for i in range(len(reader.pages)):
-    pages.append(reader.pages[i].extract_text())
+
     
 
 openai.api_key = "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"
@@ -59,7 +43,7 @@ def generateImage(pages, pageNumber):
 def index():
     global pageNumber
     imgUrl = generateImage(pages, pageNumber)
-    return render_template("testindex.html", pageText=pages[2], pageNumber=pageNumber, dalleImage=imgUrl)
+    return render_template("landing.html", pageText=pages[2], pageNumber=pageNumber, dalleImage=imgUrl)
 
 @app.route("/next")
 def next():
@@ -76,6 +60,16 @@ def previous():
         pageNumber -= 1
     imgUrl = generateImage(pages, pageNumber)
     return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
+
+
+@app.route("/<bookName:string>/<pageNum:int>")
+def bookPage(bookName, pageNum):
+    pages = []
+    reader = PdfReader("books\\" + str(bookName) + ".pdf")
+    read(bookName, pages)
+    imgUrl = generateImage(pages, pageNumber)
+    return render_template("testindex.html", pageText=pages[pageNumber], pageNumber=pageNumber, dalleImage=imgUrl)
+
 
 # def contact():
 #     if request.method == 'POST':
